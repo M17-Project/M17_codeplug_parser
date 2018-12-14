@@ -70,14 +70,14 @@ struct CODEPLUG_DATA codeplug;
 
 FILE *cp_fil;
 
-uint8_t file_line[1000][256];
+uint8_t file_line[500][100];
 uint32_t lines=0;
 
 uint8_t test[256];
 
 uint32_t extractValue(uint8_t *line)
 {	
-	for(uint16_t i=0; i<255; i++)
+	for(uint8_t i=0; i<100; i++)
 	{
 		if(line[i]=='=')
 			return atoi(&line[i+1]);
@@ -88,7 +88,7 @@ uint32_t extractValue(uint8_t *line)
 
 void extractString(uint8_t *line, uint8_t *dest)
 {	
-	for(uint16_t i=0; i<255; i++)
+	for(uint8_t i=0; i<100; i++)
 	{
 		if(line[i]=='"')
 		{
@@ -96,7 +96,8 @@ void extractString(uint8_t *line, uint8_t *dest)
 			
 			while(line[i+1+cnt]!='"')
 			{
-				dest[cnt]=line[i+1+cnt++];
+				dest[cnt]=line[i+1+cnt];
+				cnt++;
 			}
 			break;
 		}
@@ -159,11 +160,6 @@ void parseCodeplug(struct CODEPLUG_DATA *cp)
 				bank_num++;
 			break;
 			
-			case CHANNEL:
-				in_channel=1;
-				channel_num++;
-			break;
-			
 			case END:
 				if(in_channel)
 					{in_channel=0; break;}
@@ -189,12 +185,10 @@ void parseCodeplug(struct CODEPLUG_DATA *cp)
 				cp->bank[bank_num-1].num_channels=extractValue(file_line[line]);
 			break;
 			
-			/*case NUM:
-				if(in_bank && !in_channel)
-					bank_num=extractValue(file_line[line]);
-				else if(in_bank && in_channel)
-					channel_num=extractValue(file_line[line]);
-			break;*/
+			case CHANNEL:
+				in_channel=1;
+				channel_num++;
+			break;
 			
 			case NAME:
 				if(in_bank && !in_channel)
@@ -234,7 +228,7 @@ int main(void)
 {
 	cp_fil = fopen("2600653.m17", "rb");
 	
-	while(fgets(&file_line[lines++], 255, cp_fil)!=NULL);
+	while(fgets(&file_line[lines++], 100, cp_fil)!=NULL);
 	
 	printf("Loaded %d lines\n", lines);
 	
