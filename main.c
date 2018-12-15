@@ -160,12 +160,17 @@ void parseCodeplug(struct CODEPLUG_DATA *cp)
 				bank_num++;
 			break;
 			
+			case CHANNEL:
+				in_channel=1;
+				channel_num++;
+			break;
+			
 			case END:
 				if(in_channel)
-					{in_channel=0; break;}
-				if(in_bank)
-					{in_bank=0; break;}
-				if(in_codeplug)
+					in_channel=0;
+				else if(in_bank)
+					{in_bank=0; channel_num=0;}
+				else if(in_codeplug)
 					in_codeplug=0;
 			break;
 			
@@ -183,11 +188,6 @@ void parseCodeplug(struct CODEPLUG_DATA *cp)
 			
 			case NUM_CHANNELS:
 				cp->bank[bank_num-1].num_channels=extractValue(file_line[line]);
-			break;
-			
-			case CHANNEL:
-				in_channel=1;
-				channel_num++;
 			break;
 			
 			case NAME:
